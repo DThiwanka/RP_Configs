@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Input Data</title>
+</head>
+<body>
+    <h1>Input Data</h1>
+
+    <form method="POST" action="/input_data">
+        <label for="age">Age:</label>
+        <input type="text" id="age" name="age"><br><br>
+
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select><br><br>
+
+        <label for="fashion_type">Fashion Type:</label>
+        <input type="text" id="fashion_type" name="fashion_type"><br><br>
+
+        <label for="fashion_style">Fashion Style:</label>
+        <input type="text" id="fashion_style" name="fashion_style"><br><br>
+
+        <label for="outfit_choice">Outfit Choice:</label>
+        <input type="text" id="outfit_choice" name="outfit_choice"><br><br>
+
+        <input type="submit" value="Submit">
+    </form>
+
+    <p>{{ message }}</p>
+</body>
+</html>

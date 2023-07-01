@@ -1,0 +1,74 @@
+UserId,Age,Gender,FashionType,OutfitChoice
+1,25,Male,Casual,T-Shirt
+1,25,Male,Casual,Jeans
+1,25,Male,Casual,Sneakers
+1,25,Male,Casual,Hoodie
+1,25,Male,Formal,Shirt
+1,25,Male,Formal,Trousers
+2,30,Female,Formal,Heels
+3,35,Male,Sportswear,Running Shoes
+3,35,Male,Sportswear,Track Pants
+3,35,Male,Sportswear,Baseball Cap
+3,35,Male,Casual,Shirt
+3,35,Male,Casual,Jeans
+4,28,Female,Formal,Blouse
+4,28,Female,Formal,Pants
+4,28,Female,Formal,Blazer
+4,28,Female,formal,Heels
+4,28,Female,Casual,T-Shirt
+4,28,Female,Casual,Leggings
+5,40,Male,Casual,Shirt
+5,40,Male,Casual,Jeans
+5,40,Male,Casual,Sneakers
+5,40,Male,Casual,Cap
+5,40,Male,Sportswear,Jersey
+5,40,Male,Sportswear,Track Pants
+6,32,Female,Sportswear,Tank Top
+6,32,Female,Sportswear,Leggings
+6,32,Female,Sportswear,Running Shoes
+6,32,Female,Casual,Dress
+6,32,Female,Casual,Sandals
+7,27,Male,Casual,T-Shirt
+7,27,Male,Casual,Shorts
+7,27,Male,Casual,Sneakers
+7,27,Male,formal,Hat
+7,27,Male,Formal,Shirt
+7,27,Male,Formal,Trousers
+8,33,Female,Formal,Dress
+8,33,Female,Formal,Pants
+8,33,Female,Formal,Blazer
+8,33,Female,Formal,Heels
+8,33,Female,Casual,T-Shirt
+8,33,Female,Casual,Jeans
+9,45,Male,Casual,Shirt
+9,45,Male,Casual,Jeans
+9,45,Male,Casual,Sneakers
+9,45,Male,Casual,Sunglasses
+9,45,Male,Sportswear,Jersey
+9,45,Male,Sportswear,Track Pants
+10,29,Female,Formal,Blouse
+10,29,Female,formal,Pants
+10,29,Female,Formal,Blazer
+10,29,Female,Formal,Heels
+10,29,Female,Casual,T-Shirt
+10,29,Female,Casual,Leggings
+11,34,Female,Formal,Dress
+11,34,Female,Formal,Skirt
+11,34,Female,Formal,Pumps
+11,34,Female,Casual,Top
+11,34,Female,Casual,Shorts
+11,34,Female,Casual,Flip Flop
+12,31,Female,Casual,Shorts
+12,31,Female,Casual,Flip Flop   
+13,28,Female,Formal,Dress
+13,28,Female,Formal,Skirt
+13,28,Female,Formal,Heels
+13,28,Female,Casual,Top
+13,28,Female,Casual,Shorts
+13,28,Female,Casual,Flip Flop
+14,26,Female,Formal,Dress
+14,26,Female,Formal,Skirt
+14,26,Female,Formal,Heels
+14,26,Female,Casual,Top
+14,26,Female,Casual,Shorts
+14,26,Female,formal,Flip Flop
