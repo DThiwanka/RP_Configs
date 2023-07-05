@@ -66,8 +66,11 @@ def main():
     
     # User inputs
     user_id = st.text_input("User ID")
-    age = st.text_input("Age")
+    age = st.text_input ("Age")
     gender = st.selectbox("Gender", ["Male", "Female"])
+
+    #  # Convert age to integer
+    # age = int(age) if age.isdigit() else None
     
     # Fashion Type selection
     fashion_type = st.selectbox("Select Fashion Type", list(fashion_choices.keys()))
