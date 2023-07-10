@@ -74,24 +74,30 @@ def preprocess_data(df):
 
     # Perform feature encoding (one-hot encoding)
     categorical_features = ["Gender", "FashionType"]
-    onehot_encoder = OneHotEncoder(sparse=False)
-    encoded_features = pd.DataFrame(onehot_encoder.fit_transform(df[categorical_features]))
-    encoded_features.columns = onehot_encoder.get_feature_names(categorical_features)
-    df = pd.concat([df, encoded_features], axis=1)
+    encoded_features = pd.get_dummies(df[categorical_features], columns=categorical_features)
+    df = pd.concat([df.drop(categorical_features, axis=1), encoded_features], axis=1)
 
     # Perform feature selection
-    X = df.drop(["OutfitChoice"] + categorical_features, axis=1)
+    X = df.drop("OutfitChoice", axis=1)
     y = df["OutfitChoice"]
-    selector = SelectKBest(score_func=f_classif, k=2)
-    X_selected = selector.fit_transform(X, y)
-    selected_features = X.columns[selector.get_support()].tolist()
-    df = pd.DataFrame(X_selected, columns=selected_features)
 
     # Perform feature transformation (e.g., scaling)
     scaler = StandardScaler()
-    df[selected_features] = scaler.fit_transform(df[selected_features])
+    X_scaled = scaler.fit_transform(X)
 
-    return df
+    # Apply feature selection on scaled features
+    selector = SelectKBest(score_func=f_classif, k=2)
+    X_selected = selector.fit_transform(X_scaled, y)
+
+    # Get selected feature names
+    selected_features_indices = selector.get_support(indices=True)
+    selected_features = X.columns[selected_features_indices].tolist()
+
+    # Create new DataFrame with selected features and target variable
+    df_selected = pd.DataFrame(X_selected, columns=selected_features)
+    df_selected["OutfitChoice"] = y
+
+    return df_selected
 
 
 def train_model(df):
