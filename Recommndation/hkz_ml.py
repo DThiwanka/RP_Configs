@@ -6,6 +6,7 @@ from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
 from sklearn.feature_selection import SelectKBest, f_classif
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
+import joblib
 
 # Fashion Choices
 fashion_choices = {
@@ -54,6 +55,7 @@ fashion_choices = {
 
 # CSV file path
 csv_file = "./csvfiles/fashion_data_forHkz_run.csv"
+model_file = "./model/fashion_model.pkl"
 
 
 # Function to append data to CSV file
@@ -112,10 +114,18 @@ def train_model(df):
     model = RandomForestClassifier()
     model.fit(X_train, y_train)
 
-    # Evaluate the model
+    # Evaluatethe model
     y_pred = model.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
     return model, accuracy
+
+
+def save_model(model):
+    joblib.dump(model, model_file)
+
+
+def load_model():
+    return joblib.load(model_file)
 
 
 def main():
@@ -151,7 +161,9 @@ def main():
         df = pd.read_csv(csv_file)
         df = preprocess_data(df)
         model, accuracy = train_model(df)
+        save_model(model)
         st.success(f"Model trained with accuracy: {accuracy}")
+        st.success(f"Model saved successfully!")
 
 
 if __name__ == "__main__":
