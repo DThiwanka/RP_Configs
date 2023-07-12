@@ -107,17 +107,11 @@ def train_model(df):
     X = df.drop("OutfitChoice", axis=1)
     y = df["OutfitChoice"]
 
-    # Split the data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
     # Train the model (using Random Forest as an example)
     model = RandomForestClassifier()
-    model.fit(X_train, y_train)
+    model.fit(X, y)
 
-    # Evaluatethe model
-    y_pred = model.predict(X_test)
-    accuracy = accuracy_score(y_test, y_pred)
-    return model, accuracy
+    return model
 
 
 def save_model(model):
@@ -160,10 +154,9 @@ def main():
     if st.button("Train Model"):
         df = pd.read_csv(csv_file)
         df = preprocess_data(df)
-        model, accuracy = train_model(df)
+        model = train_model(df)
         save_model(model)
-        st.success(f"Model trained with accuracy: {accuracy}")
-        st.success(f"Model saved successfully!")
+        st.success("Model trained and saved successfully!")
 
 
 if __name__ == "__main__":
