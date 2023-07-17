@@ -1,10 +1,11 @@
 import sys
 import json
 import pandas as pd
-from sklearn import joblib
+import pickle
 
 # Load the trained model
-model = joblib.load('model.pkl')
+with open('../model/fashion_model.pkl', 'rb') as file:
+    model = pickle.load(file)
 
 # Get the input data from stdin
 input_data = json.loads(sys.stdin.read())
