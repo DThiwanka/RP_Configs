@@ -1,68 +1,38 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Link, Routes, Route } from 'react-router-dom';
+import Recommendations from './Recommendations';
 
-function App() {
-  const [userID, setUserID] = useState('');
-  const [recommendations, setRecommendations] = useState([]);
-  const [error, setError] = useState('');
-
-  const handleUserIDChange = (event) => {
-    setUserID(event.target.value);
-  };
-
-  const handleFormSubmit = async (event) => {
-    event.preventDefault();
-
-    try {
-      const response = await fetch('/recommendations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ user_id: userID }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error);
-      }
-
-      const data = await response.json();
-      setRecommendations(data.recommendations);
-      setError('');
-    } catch (error) {
-      setError(error.message);
-      setRecommendations([]);
-    }
-  };
-
+function Home() {
   return (
     <div>
-      <h1>Outfit Recommendation System</h1>
-      <form onSubmit={handleFormSubmit}>
-        <label htmlFor="userID">User ID:</label>
-        <input
-          type="text"
-          id="userID"
-          value={userID}
-          onChange={handleUserIDChange}
-        />
-        <button type="submit">Get Recommendations</button>
-      </form>
-
-      {error && <p>{error}</p>}
-
-      {recommendations.length > 0 && (
-        <div>
-          <h2>Recommended Outfit Choices:</h2>
-          <ul>
-            {recommendations.map((recommendation, index) => (
-              <li key={index}>{recommendation}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <h1>Welcome to Outfit Recommendations</h1>
+      <Link to="/recommendations">
+        <button>Recommendations</button>
+      </Link>
     </div>
   );
 }
 
-export default App;
+function App() {
+  return (
+    <Router>
+      <nav>
+        <ul>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/recommendations">Recommendations</Link>
+          </li>
+        </ul>
+      </nav>
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/recommendations" element={<Recommendations />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default App
