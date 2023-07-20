@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Link, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
 import Recommendations from './Recommendations';
 
 function Home() {
@@ -27,12 +27,12 @@ function App() {
         </ul>
       </nav>
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/recommendations" element={<Recommendations />} />
-      </Routes>
+      <Switch>
+        <Route exact path="/" component={Home} />
+        <Route path="/recommendations" component={Recommendations} />
+      </Switch>
     </Router>
   );
 }
 
-export default App
+export default App;
