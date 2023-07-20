@@ -2,6 +2,7 @@
     "name": "outfit-recommendation-app",
     "version": "1.0.0",
     "description": "A React app for outfit recommendations",
+    "proxy": "http://localhost:5000",
     "main": "index.js",
     "scripts": {
         "start": "react-scripts start",
