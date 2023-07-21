@@ -30,7 +30,7 @@ function Recommendations() {
       }
 
       const data = await response.json();
-      setAge(data.age);
+      setAge(data.most_recommended_age);
       setRecommendations(data.recommendations);
       setfashion_types(data.fashion_types);
       setError('');
