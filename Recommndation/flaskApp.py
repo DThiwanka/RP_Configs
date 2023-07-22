@@ -4,6 +4,10 @@ from flask import Flask, request, jsonify
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.ensemble import RandomForestClassifier
 from scipy.stats import mode
+import os
+import threading
+import time
+import joblib
 
 # Load the CSV file
 data = pd.read_csv('./csvfiles/fashion_data_forHkz_run.csv')
@@ -24,10 +28,69 @@ X_encoded = encoder.fit_transform(X.drop('UserID', axis=1)).toarray()
 model = RandomForestClassifier()
 model.fit(X_encoded, y)
 
+# Save the model to a file
+model_file = './model/fashion_model.pkl'
+joblib.dump(model, model_file)
+
+# Function to train the model
+def train_model():
+    global model
+    global data
+
+    # Load the CSV file
+    data = pd.read_csv('./csvfiles/fashion_data_forHkz_run.csv')
+
+    # Data preprocessing
+    # Drop any rows with missing values
+    data.dropna(inplace=True)
+
+    # Split features and target variable
+    X = data.drop(['OutfitChoice'], axis=1)
+    y = data['OutfitChoice']
+
+    # Perform one-hot encoding on categorical features
+    encoder = OneHotEncoder()
+    X_encoded = encoder.fit_transform(X.drop('UserID', axis=1)).toarray()
+
+    # Train the RandomForestClassifier model
+    model = RandomForestClassifier()
+    model.fit(X_encoded, y)
+
+    # Save the model to a file
+    joblib.dump(model, model_file)
+
+    print("Model trained successfully!")
+
+
+# Function to check for CSV changes and trigger model training
+def check_csv_changes():
+    global data
+
+    # Get the initial timestamp of the CSV file
+    initial_timestamp = os.path.getmtime('./csvfiles/fashion_data_forHkz_run.csv')
+
+    while True:
+        # Sleep for 1 second to avoid continuous checks
+        time.sleep(1)
+
+        # Get the current timestamp of the CSV file
+        current_timestamp = os.path.getmtime('./csvfiles/fashion_data_forHkz_run.csv')
+
+        # Check if the CSV file has been modified
+        if current_timestamp != initial_timestamp:
+            print("Detected changes in the CSV file. Retraining the model...")
+            train_model()
+
+            # Update the initial timestamp with the current timestamp
+            initial_timestamp = current_timestamp
+
+# Start a separate thread to check for CSV changes and trigger model training
+csv_thread = threading.Thread(target=check_csv_changes)
+csv_thread.start()
+
 # Create Flask application
 app = Flask(__name__)
 
-# Define API endpoint
 # Define API endpoint
 @app.route('/recommendations', methods=['POST'])
 def get_recommendations():
@@ -102,6 +165,16 @@ def insert_data():
         data.to_csv('./csvfiles/fashion_data_forHkz_run.csv', index=False)
 
         return jsonify({'message': 'Data inserted successfully!'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+# Define API endpoint for training the model
+@app.route('/train_model', methods=['POST'])
+def trigger_training():
+    try:
+        train_model()
+        return jsonify({'message': 'Model trained successfully!'}), 200
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
