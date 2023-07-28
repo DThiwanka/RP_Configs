@@ -1,3 +1,4 @@
+# Import necessary libraries
 import pandas as pd
 from flask import Flask, request, jsonify
 from sklearn.preprocessing import OneHotEncoder
@@ -7,13 +8,6 @@ import os
 import threading
 import time
 import joblib
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.probability import FreqDist
-
-# Download NLTK resources (uncomment these lines if you haven't downloaded them before)
-# nltk.download('punkt')
-# nltk.download('averaged_perceptron_tagger')
 
 # Load the CSV file
 data = pd.read_csv('./csvfiles/fashion_data_forHkz_run.csv')
@@ -125,18 +119,7 @@ def get_recommendations():
     similar_users = data[data['OutfitChoice'].isin(outfit_choices)]
     most_recommended_age = mode(similar_users['Age'], keepdims=True)[0][0]
 
-    # Tokenize the FashionType descriptions
-    fashion_type_tokens = [word_tokenize(desc) for desc in fashion_types]
     
-    # Flatten the list of tokens
-    all_tokens = [token for sublist in fashion_type_tokens for token in sublist]
-    
-    # Calculate the frequency distribution of the tokens
-    token_freq_dist = FreqDist(all_tokens)
-
-    # Get the most common words in the FashionType descriptions
-    most_common_words = token_freq_dist.most_common(3)
-
     # Convert recommendations to Python list
     recommendations_list = recommendations.tolist()
     
@@ -146,8 +129,7 @@ def get_recommendations():
         'age': age,
         'fashion_types': fashion_types,
         'outfit_choices': outfit_choices,
-        'most_recommended_age': int(most_recommended_age),
-        'most_common_words': most_common_words
+        'most_recommended_age': int(most_recommended_age)
     }
     
     return jsonify(response), 200
@@ -186,7 +168,7 @@ def insert_data():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
+    
 # Define API endpoint for training the model
 @app.route('/train_model', methods=['POST'])
 def trigger_training():
@@ -197,20 +179,42 @@ def trigger_training():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# Define API endpoint to get the current model status
-@app.route('/model_status', methods=['GET'])
-def get_model_status():
-    global model
-
-    model_status = "Trained" if model else "Not Trained"
-
+#############################################################
+@app.route('/get_recommendations', methods=['POST'])
+def get_user_recommendations():
+    user_id = request.json['user_id']
+    
+    # Check if the user ID exists in the CSV data
+    if int(user_id) not in data['UserID'].values:
+        return jsonify({'error': 'Invalid User ID. Please enter a valid User ID.'}), 400
+    
+    # Find the user's past bought items
+    user_data = data[data['UserID'] == int(user_id)]
+    user_features = user_data.drop(['UserID', 'OutfitChoice'], axis=1)
+    
+    # Perform one-hot encoding on user features
+    user_encoded = encoder.transform(user_features).toarray()
+    
+    # Get predictions for user's past bought items
+    predictions = model.predict(user_encoded)
+    
+    # Retrieve most recommended FashionTypes and OutfitChoices
+    fashion_type_counts = user_data['FashionType'].value_counts()
+    most_recommended_fashion_types = fashion_type_counts.nlargest(3).index.tolist()
+    
+    outfit_choice_counts = user_data['OutfitChoice'].value_counts()
+    most_recommended_outfit_choices = outfit_choice_counts.nlargest(3).index.tolist()
+    
+    # Prepare response with most recommended FashionTypes and OutfitChoices
     response = {
-        'model_status': model_status
+        'most_recommended_fashion_types': most_recommended_fashion_types,
+        'most_recommended_outfit_choices': most_recommended_outfit_choices
     }
-
+    
     return jsonify(response), 200
+
+#############################################################
 
 # Run the Flask application
 if __name__ == '__main__':
     app.run()
-
