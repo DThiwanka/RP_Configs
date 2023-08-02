@@ -210,6 +210,27 @@ def get_model_status():
 
     return jsonify(response), 200
 
+# Define API endpoint to read the data in the model
+@app.route('/model_data', methods=['GET'])
+def get_model_data():
+    global X
+    global y
+
+    # Get the feature names and target variable name
+    feature_names = X.columns.tolist()
+    target_variable = y.name
+
+    # Get the number of data points used to train the model
+    num_data_points = len(X)
+
+    response = {
+        'feature_names': feature_names,
+        'target_variable': target_variable,
+        'num_data_points': num_data_points
+    }
+
+    return jsonify(response), 200
+
 # Run the Flask application
 if __name__ == '__main__':
     app.run()

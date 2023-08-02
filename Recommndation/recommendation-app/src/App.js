@@ -5,6 +5,7 @@ import Home from './components/Home';
 import DataInputForm from './components/DataInputForm';
 import OutfitSelector from './components/OutfitSelector';
 import './App.css';
+import ModelDataComponent from './components/ModelDataComponent';
 
 
 function App() {
@@ -24,6 +25,9 @@ function App() {
           <li>
             <Link to="/outfit">Outfit</Link>
           </li>
+          <li>
+            <Link to="/model">Model</Link>
+          </li>
         </ul>
       </nav>
 
@@ -32,6 +36,7 @@ function App() {
         <Route path="/recommendations" component={Recommendations} />
         <Route path="/DataInput" component={DataInputForm} />
         <Route path="/outfit" component={OutfitSelector} />
+        <Route path="/model" component={ModelDataComponent} />
       </Switch>
     </Router>
   );
