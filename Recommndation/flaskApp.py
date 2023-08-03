@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from flask import Flask, request, jsonify
 from sklearn.preprocessing import OneHotEncoder
@@ -26,6 +27,8 @@ data.dropna(inplace=True)
 X = data.drop(['OutfitChoice'], axis=1)
 y = data['OutfitChoice']
 
+
+
 # Perform one-hot encoding on categorical features
 encoder = OneHotEncoder()
 X_encoded = encoder.fit_transform(X.drop('UserID', axis=1)).toarray()
@@ -34,9 +37,17 @@ X_encoded = encoder.fit_transform(X.drop('UserID', axis=1)).toarray()
 model = RandomForestClassifier()
 model.fit(X_encoded, y)
 
+# # Keep track of training history
+# history = model.fit(X_encoded, y)
+# training_history.append(history.history) # This line may vary based on the ML framework used
+
+
 # Save the model to a file
 model_file = './model/fashion_model.pkl'
 joblib.dump(model, model_file)
+
+# Initialize a list to store training history
+training_history = []
 
 # Function to train the model
 def train_model():
@@ -61,6 +72,8 @@ def train_model():
     # Train the RandomForestClassifier model
     model = RandomForestClassifier()
     model.fit(X_encoded, y)
+    accuracy = model.score(X_encoded, y)
+    training_history.append(accuracy)
 
     # Save the model to a file
     joblib.dump(model, model_file)
@@ -210,11 +223,12 @@ def get_model_status():
 
     return jsonify(response), 200
 
-# Define API endpoint to read the data in the model
-@app.route('/model_data', methods=['GET'])
-def get_model_data():
+# Define API endpoint to read more details from the model
+@app.route('/model_details', methods=['GET'])
+def get_model_details():
     global X
     global y
+    global model
 
     # Get the feature names and target variable name
     feature_names = X.columns.tolist()
@@ -223,13 +237,79 @@ def get_model_data():
     # Get the number of data points used to train the model
     num_data_points = len(X)
 
+    # Get the model's hyperparameters
+    model_params = model.get_params()
+
+    # Get the feature importances (if available, only applicable for certain models)
+    feature_importances = None
+    if hasattr(model, 'feature_importances_'):
+        feature_importances = model.feature_importances_.tolist()
+
+    # Get the accuracy of the model (if available, only applicable for classification models)
+    accuracy = None
+    if hasattr(model, 'score'):
+        accuracy = model.score(X_encoded, y)
+
+    # Get the model's classes (if available, only applicable for classification models)
+    model_classes = None
+    if hasattr(model, 'classes_'):
+        model_classes = model.classes_.tolist()
+
+    # Get the model's number of estimators (if available, only applicable for ensemble models)
+    num_estimators = None
+    if hasattr(model, 'n_estimators'):
+        num_estimators = model.n_estimators
+
+    # Get the model's criterion (if available, only applicable for certain models)
+    criterion = None
+    if hasattr(model, 'criterion'):
+        criterion = model.criterion
+
+    # Get the model's maximum depth (if available, only applicable for tree-based models)
+    max_depth = None
+    if hasattr(model, 'max_depth'):
+        max_depth = model.max_depth
+
+    # Get the model's training data shape
+    data_shape = X.shape
+
+    # Get the model's unique classes and their frequencies (if applicable, only for classification models)
+    unique_classes_freq = None
+    if hasattr(model, 'predict'):
+        predictions = model.predict(X_encoded)
+        unique_classes, class_counts = np.unique(predictions, return_counts=True)
+        unique_classes_freq = dict(zip(unique_classes.tolist(), class_counts.tolist()))
+
+    # Add any other relevant details about the model (you can add more as needed)
+    # ...
+
     response = {
         'feature_names': feature_names,
         'target_variable': target_variable,
-        'num_data_points': num_data_points
+        'num_data_points': num_data_points,
+        'data_shape': data_shape,
+        'model_params': model_params,
+        'feature_importances': feature_importances,
+        'accuracy': accuracy,
+        'model_classes': model_classes,
+        'num_estimators': num_estimators,
+        'criterion': criterion,
+        'max_depth': max_depth,
+        'unique_classes_freq': unique_classes_freq
+        # Add more details here as needed
     }
 
     return jsonify(response), 200
+
+# Define API endpoint to get the training history
+@app.route('/get_training_history', methods=['GET'])
+def get_training_history():
+    global training_history
+
+    if not training_history:
+        return jsonify({'message': 'Model has not been trained yet. No training history available.'}), 404
+
+    return jsonify({'training_history': training_history}), 200
 
 # Run the Flask application
 if __name__ == '__main__':

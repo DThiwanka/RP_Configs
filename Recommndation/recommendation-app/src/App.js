@@ -6,6 +6,11 @@ import DataInputForm from './components/DataInputForm';
 import OutfitSelector from './components/OutfitSelector';
 import './App.css';
 import ModelDataComponent from './components/ModelDataComponent';
+import History from './components/History';
+
+
+
+
 
 
 function App() {
@@ -28,6 +33,9 @@ function App() {
           <li>
             <Link to="/model">Model</Link>
           </li>
+          <li>
+            <Link to="/traindetails">Details</Link>
+          </li>
         </ul>
       </nav>
 
@@ -37,6 +45,7 @@ function App() {
         <Route path="/DataInput" component={DataInputForm} />
         <Route path="/outfit" component={OutfitSelector} />
         <Route path="/model" component={ModelDataComponent} />
+        <Route path="/history" component={History} />
       </Switch>
     </Router>
   );

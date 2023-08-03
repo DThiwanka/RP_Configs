@@ -1,37 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const ModelDataComponent = () => {
-    const [modelData, setModelData] = useState(null);
+
+const ModelDetails = () => {
+    const [modelDetails, setModelDetails] = useState({});
 
     useEffect(() => {
-        // Function to fetch model data from the API
-        const fetchModelData = async () => {
-            try {
-                const response = await axios.get('/model_data');
-                setModelData(response.data);
-            } catch (error) {
-                console.error('Error fetching model data:', error);
-            }
-        };
-
-        fetchModelData();
+        // Fetch data from the API when the component mounts
+        fetchModelDetails();
     }, []);
 
+    const fetchModelDetails = async () => {
+        try {
+            const response = await axios.get('/model_details');
+            setModelDetails(response.data);
+        } catch (error) {
+            console.error('Error fetching model details:', error);
+        }
+    };
+
+    // Render the model details
     return (
         <div>
-            {modelData ? (
-                <div>
-                    <h2>Model Data</h2>
-                    <p>Feature Names: {JSON.stringify(modelData.feature_names)}</p>
-                    <p>Target Variable: {modelData.target_variable}</p>
-                    <p>Number of Data Points: {modelData.num_data_points}</p>
-                </div>
-            ) : (
-                <p>Loading model data...</p>
-            )}
+            <h1>Model Details</h1>
+            <pre>{JSON.stringify(modelDetails, null, 2)}</pre>
         </div>
     );
 };
 
-export default ModelDataComponent;
+export default ModelDetails;
