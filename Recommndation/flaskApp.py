@@ -49,14 +49,6 @@ joblib.dump(model, model_file)
 # Initialize a list to store training history
 training_history = []
 
-# Function to calculate the mode of a list of values
-def calculate_mode(values):
-    freq_dist = {}
-    for value in values:
-        freq_dist[value] = freq_dist.get(value, 0) + 1
-    max_freq = max(freq_dist.values())
-    return [value for value, freq in freq_dist.items() if freq == max_freq]
-
 # Function to train the model
 def train_model():
     global model
@@ -88,15 +80,6 @@ def train_model():
 
     print("Model trained successfully!")
 
-# Function to calculate the most recommended age for a specific user
-def get_most_recommended_age(user_id):
-    user_data = data[data['UserID'] == user_id]
-    outfit_choices = user_data['OutfitChoice'].tolist()
-
-    similar_users = data[data['OutfitChoice'].isin(outfit_choices)]
-    most_recommended_age = similar_users['Age'].mode().iloc[0]
-
-    return int(most_recommended_age)
 
 # Function to check for CSV changes and trigger model training
 def check_csv_changes():
@@ -151,8 +134,9 @@ def get_recommendations():
     fashion_types = user_data['FashionType'].tolist()
     outfit_choices = user_data['OutfitChoice'].tolist()
     
-    # Get the most recommended age for the specific user
-    most_recommended_age = get_most_recommended_age(int(user_id))
+    # Get the most common/recommended age among users with similar outfit choices
+    similar_users = data[data['OutfitChoice'].isin(outfit_choices)]
+    most_recommended_age = mode(similar_users['Age'], keepdims=True)[0][0]
 
     # Tokenize the FashionType descriptions
     fashion_type_tokens = [word_tokenize(desc) for desc in fashion_types]
@@ -175,11 +159,12 @@ def get_recommendations():
         'age': age,
         'fashion_types': fashion_types,
         'outfit_choices': outfit_choices,
-        'most_recommended_age': most_recommended_age,
+        'most_recommended_age': int(most_recommended_age),
         'most_common_words': most_common_words
     }
     
     return jsonify(response), 200
+
 
 # Define API endpoint to insert data
 @app.route('/insert_data', methods=['POST'])
